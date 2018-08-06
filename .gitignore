@@ -1,0 +1,8 @@
+/target/
+/.bpmn/
+/.classpath
+/.project
+/.settings
+/src/test/license/
+activiti.lic
+.idea

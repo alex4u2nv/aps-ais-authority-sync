@@ -1,0 +1,110 @@
+version: '3'
+services:
+    aps:
+      build: ./
+      image: activiti
+      environment:
+        ACTIVITI_APP_PROPS: '${CATALINA_HOME}/lib/activiti-app.properties'
+        ACTIVITI_IDENTITY_SERVICE_PROPS: /usr/local/tomcat/lib/activiti-identity-service.properties
+        IDENTITY_SERVICE_ENABLED: 'true'
+        IDENTITY_SERVICE_REALM: springboot
+        IDENTITY_SERVICE_AUTH: 'http://192.168.1.75:8180/auth'
+        IDENTITY_SERVICE_SSL_REQUIRED: none
+        IDENTITY_SERVICE_RESOURCE: activiti
+        IDENTITY_SERVICE_PRINCIPAL_ATTRIBUTE: email
+        IDENTITY_SERVICE_ENABLE_BASIC_AUTH: 'true'
+        IDENTITY_SERVICE_TOKEN_STORE: session
+      ports:
+        - '8080:8080'
+      depends_on:
+        - keycloak
+
+    keycloak:
+      image: alfresco/alfresco-keycloak
+      ports:
+        - "8180:8180"
+      depends_on:
+        - "openldap1"
+        - "openldap2"
+        - "openldap3"
+
+    openldap1:
+        build: ./src/test/docker/openldap/
+        image:  alfresco/openldap
+        container_name: openldap1
+        environment:
+          LDAP_TLS: 'true'
+          LDAP_TLS_CRT_FILENAME: 'fullchain.pem'
+          LDAP_TLS_KEY_FILENAME: 'privkey.pem'
+          LDAP_TLS_CA_CRT_FILENAME: 'fullchain.pem'
+          LDAP_ORGANISATION: "Alfresco"
+          LDAP_DOMAIN: "abc.com"
+          LDAP_BASE_DN: "dc=abc,dc=com"
+          LDAP_ADMIN_PASSWORD: "admin"
+          LDAP_TLS_CIPHER_SUITE: "NORMAL"
+          LDAP_TLS_VERIFY_CLIENT: "allow"
+        tty: true
+        stdin_open: true
+        volumes:
+          - ./src/test/docker/ldap1/:/tmp/ldap/
+          - /var/lib/ldap
+          - /etc/ldap/slapd.d
+          - /container/service/slapd/assets/certs/
+        ports:
+          - "1389:389"
+          - "1639:639"
+        hostname: "abc.com"
+    openldap2:
+        image: alfresco/openldap
+        container_name: openldap2
+        environment:
+          LDAP_TLS: 'true'
+          LDAP_TLS_CRT_FILENAME: 'fullchain.pem'
+          LDAP_TLS_KEY_FILENAME: 'privkey.pem'
+          LDAP_TLS_CA_CRT_FILENAME: 'fullchain.pem'
+          LDAP_ORGANISATION: "Alexander"
+          LDAP_DOMAIN: "efg.com"
+          LDAP_BASE_DN: "dc=efg,dc=com"
+          LDAP_ADMIN_PASSWORD: "admin"
+          LDAP_TLS_CIPHER_SUITE: "NORMAL"
+          LDAP_TLS_VERIFY_CLIENT: "allow"
+        tty: true
+        stdin_open: true
+        volumes:
+          - /ldap2/var/lib/ldap
+          - /ldap2/etc/ldap/slapd.d
+          - /ldap2/container/service/slapd/assets/certs/
+          - ./src/test/docker/ldap2/:/tmp/ldap/
+        ports:
+          - "2389:389"
+          - "2639:639"
+        hostname: "efg.com"
+        depends_on:
+          - "openldap1"
+    openldap3:
+        image: alfresco/openldap
+        container_name: openldap3
+        environment:
+          LDAP_TLS: 'true'
+          LDAP_TLS_CRT_FILENAME: 'fullchain.pem'
+          LDAP_TLS_KEY_FILENAME: 'privkey.pem'
+          LDAP_TLS_CA_CRT_FILENAME: 'fullchain.pem'
+          LDAP_ORGANISATION: "Mahabir"
+          LDAP_DOMAIN: "hij.com"
+          LDAP_BASE_DN: "dc=hij,dc=com"
+          LDAP_ADMIN_PASSWORD: "admin"
+          LDAP_TLS_CIPHER_SUITE: "NORMAL"
+          LDAP_TLS_VERIFY_CLIENT: "allow"
+        tty: true
+        stdin_open: true
+        volumes:
+          - /ldap3/var/lib/ldap
+          - /ldap3/etc/ldap/slapd.d
+          - /ldap3/container/service/slapd/assets/certs/
+          - ./src/test/docker/ldap3/:/tmp/ldap/
+        ports:
+          - "3389:389"
+          - "3639:639"
+        hostname: "hij.com"
+        depends_on:
+          - openldap1
