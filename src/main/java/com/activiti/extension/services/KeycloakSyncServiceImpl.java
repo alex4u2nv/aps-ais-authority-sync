@@ -80,7 +80,7 @@ public class KeycloakSyncServiceImpl implements KeycloakSyncService {
         pageSize = externalUsers.size();
         totalCount += pageSize;
         actualCount += pageSize;
-        externalUsers.parallelStream().forEach(user -> processor.process(user));
+        externalUsers.parallelStream().forEach(processor::process);
         LOGGER.debug("page: {} with items returned {}", page, pageSize);
       } else {
         totalCount += batchSize; //increment by batch size as this batch has an invalid item that prevents keycloak form returning
@@ -110,7 +110,7 @@ public class KeycloakSyncServiceImpl implements KeycloakSyncService {
   public Set<ExternalUser> getAllUsers() throws RuntimeException {
 
     final Set<ExternalUser> users = ConcurrentHashMap.newKeySet();
-    processAllUsers((e) -> users.add(e), DEFAULT_BATCH);
+    processAllUsers(users::add, DEFAULT_BATCH);
 
     return users;
   }
@@ -119,7 +119,7 @@ public class KeycloakSyncServiceImpl implements KeycloakSyncService {
   public Set<ExternalUser> getAllUsersInGroup(String groupId) throws RuntimeException {
     Set<ExternalUser> members = ConcurrentHashMap.newKeySet();
 
-    processAllUsersInGroup((e) -> members.add(e), groupId, DEFAULT_BATCH);
+    processAllUsersInGroup(members::add, groupId, DEFAULT_BATCH);
     return members;
   }
 
@@ -143,8 +143,7 @@ public class KeycloakSyncServiceImpl implements KeycloakSyncService {
   @Override
   public Set<ExternalGroup> getAllGroupAndMembers() throws RuntimeException {
     Set<ExternalGroup> groups = getAllGroups();
-    groups.parallelStream().forEach(group ->
-        getGroupMembers(group));
+    groups.parallelStream().forEach(this::getGroupMembers);
     return groups;
   }
 

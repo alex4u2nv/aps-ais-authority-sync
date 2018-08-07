@@ -19,7 +19,7 @@ public class KeycloakGroupToGroup implements Converter<KeycloakGroup, ExternalGr
               keycloakGroup
                   .getSubGroups()
                   .stream()
-                  .map(s -> convert(s))
+                  .map(this::convert)
                   .collect(Collectors.toList()))
           .withName(keycloakGroup.getName())
           .build();

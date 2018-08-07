@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * @author Alexander Mahaibr
+ */
 public class ExternalObjects implements ExternalIdmQueryResult {
-  private List<ExternalGroup> groups;
-  private List<ExternalUser> users;
+  private final List<ExternalGroup> groups;
+  private final List<ExternalUser> users;
 
   private ExternalObjects(Builder builder) {
     groups = builder.groups;

@@ -15,8 +15,8 @@ import java.util.List;
 
 public class ProcessByLastModified implements UserProcessor {
 
-  private List<ExternalIdmUser> users = new ArrayList<>();
-  private Date lastModifiedTimestamp;
+  private final List<ExternalIdmUser> users = new ArrayList<>();
+  private final Date lastModifiedTimestamp;
 
   public ProcessByLastModified(Date lastModifiedTimestamp) {
     this.lastModifiedTimestamp = lastModifiedTimestamp;

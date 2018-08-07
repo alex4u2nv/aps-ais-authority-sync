@@ -62,7 +62,7 @@ public class KeycloakUserToUserTest {
             .withLDAP_ENTRY_DN("cn=Alexander Mahabir,ou=Consulting,dc=alfresco,dc=com")
             .withLDAP_ID("b7423970-2aae-1038-9ca5-717ca1562e0")
             .build())
-        .withCreatedTimestamp(1533221252500l)
+        .withCreatedTimestamp(1533221252500L)
         .withEmail("alex.mahabir@alfresco.com")
         .withEmailVerified(true)
         .withEnabled(true)

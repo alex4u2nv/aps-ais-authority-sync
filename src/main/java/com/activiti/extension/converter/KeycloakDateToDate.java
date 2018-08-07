@@ -25,9 +25,8 @@ public class KeycloakDateToDate implements Converter<String[], Date> {
   public Date convert(String[] s) {
     if (s != null && s.length > 0 && !Strings.isNullOrEmpty(s[0])) {
       //using LDAP date format which typically uses zone-id 'Z'
-      Date date = Date
+      return Date
           .from(LocalDateTime.parse(s[0], FORMATTER).atZone(ZoneId.of("Z")).toInstant());
-      return date;
     }
     LOG.warn("Date is null");
     return null;

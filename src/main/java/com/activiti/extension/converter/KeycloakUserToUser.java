@@ -3,6 +3,7 @@ package com.activiti.extension.converter;
 import com.activiti.extension.model.external.KeycloakUser;
 import com.activiti.extension.model.internal.ExternalUser;
 import java.util.Date;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,23 +25,21 @@ public class KeycloakUserToUser implements
   private KeycloakDateToDate keycloakDateToDate;
 
   public ExternalUser convert(KeycloakUser keycloakUser) {
-    Date date = null;
+    Date date;
     if (keycloakUser == null) {
       return null;
     }
-    if (keycloakUser.getAttributes() != null) {
-      date = keycloakDateToDate.convert(keycloakUser.getAttributes().getModifyTimestamp());
-    }
-
-    ExternalUser externalUser = ExternalUser.builder()
+    return ExternalUser.builder()
         .withEmail(keycloakUser.getEmail())
         .withFirstName(keycloakUser.getFirstName())
         .withId(keycloakUser.getUsername())
         .withLastName(keycloakUser.getLastName())
-        .withLastModifiedTimeStamp(date)
+        .withLastModifiedTimeStamp(
+            Optional.ofNullable(keycloakUser.getAttributes())
+            .map(attr -> keycloakDateToDate.convert(attr.getModifyTimestamp()))
+            .orElse(null))
         .withOriginalSrcId(keycloakUser.getId())
         .build();
-    return externalUser;
   }
 
   public KeycloakUserToUser() {

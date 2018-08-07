@@ -59,9 +59,8 @@ public class KeycloakSyncServiceIT {
   private int count = 0;
   private final static int BATCH_SIZE = 100;
 
-  private Gson gson;
   public KeycloakSyncServiceIT() {
-    gson = new GsonBuilder().setPrettyPrinting().create();
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
   }
   /**
    * Test services that connect to keycloak and attempt to process all users.
@@ -70,7 +69,7 @@ public class KeycloakSyncServiceIT {
   public void testGetAllUsers() throws Exception {
     Integer count = keycloakSyncService.getTotalUsers();
     assertThat(count).isGreaterThan(0);
-    keycloakSyncService.processAllUsers((user) -> doNothing(user), BATCH_SIZE);
+    keycloakSyncService.processAllUsers(this::doNothing, BATCH_SIZE);
     LOGGER.debug("Visited {} items", this.count);
   }
 

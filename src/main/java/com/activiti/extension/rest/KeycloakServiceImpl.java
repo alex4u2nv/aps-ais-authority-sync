@@ -39,7 +39,7 @@ public class KeycloakServiceImpl implements KeycloakService {
   @Value("${keycloak.auth-server-url}")
   private String keycloakUrl;
 
-  @Value("${keycloak.enabled}")
+  @Value("${keycloak.enabled:false}")
   private Boolean keycloakEnabled;
 
   @Value("${kc.sync.serviceAccount}")
@@ -115,7 +115,7 @@ public class KeycloakServiceImpl implements KeycloakService {
     try {
 
       users = Optional.of(keycloakApi.getUsers(realm, first, max).execute())
-          .filter(r -> r.isSuccessful())
+          .filter(retrofit2.Response::isSuccessful)
           .flatMap(r -> Optional.ofNullable(r.body()));
 
     } catch (IOException ioe) {
@@ -134,7 +134,7 @@ public class KeycloakServiceImpl implements KeycloakService {
     Optional<Set<KeycloakGroup>> groups;
     try {
       groups = Optional.of(keycloakApi.getGroups(realm).execute())
-          .filter(r -> r.isSuccessful())
+          .filter(retrofit2.Response::isSuccessful)
           .flatMap(r -> Optional.ofNullable(r.body()));
 
     } catch (IOException ioe) {
@@ -152,12 +152,12 @@ public class KeycloakServiceImpl implements KeycloakService {
   @Override
   public Optional<List<KeycloakUser>> getGroupMembers(String groupId, int first, int max)
       throws CannotConnectException {
-    Optional<List<KeycloakUser>> members = Optional.empty();
+    Optional<List<KeycloakUser>> members;
     try {
 
       members = Optional.of(keycloakApi
           .getGroupMembers(realm, groupId, first, max).execute())
-          .filter(r -> r.isSuccessful())
+          .filter(retrofit2.Response::isSuccessful)
           .flatMap(r -> Optional.ofNullable(r.body()));
 
     } catch (IOException ioe) {

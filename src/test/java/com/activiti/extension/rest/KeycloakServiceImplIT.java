@@ -8,6 +8,7 @@ import com.activiti.extension.model.external.KeycloakUser;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,7 +80,7 @@ public class KeycloakServiceImplIT {
     final int START = 0;
     Integer count = keycloakService.getTotalUsers();
 
-    List<KeycloakUser> users = keycloakService.getUsers(START, MAX).get();
+    List<KeycloakUser> users = keycloakService.getUsers(START, MAX).orElse(null);
     assertThat(users).isNotNull();
 
     if (count > MAX) {
@@ -94,7 +95,7 @@ public class KeycloakServiceImplIT {
   public void testGetGroups() throws Exception {
     Optional<Set<KeycloakGroup>> groups = keycloakService.getGroups();
     assertThat(groups).isNotEmpty();
-    LOGGER.debug("Groups {} ", groups.get());
+    LOGGER.debug("Groups {} ", groups.orElse(ConcurrentHashMap.newKeySet()));
   }
 
 
