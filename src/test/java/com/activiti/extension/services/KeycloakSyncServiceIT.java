@@ -52,7 +52,7 @@ public class KeycloakSyncServiceIT {
   KeycloakSyncService keycloakSyncService;
 
   @Before
-  public void beforeTest() throws Exception {
+  public void beforeTest() {
     assertThat(keycloakService).isNotNull();
   }
 
@@ -66,7 +66,7 @@ public class KeycloakSyncServiceIT {
    * Test services that connect to keycloak and attempt to process all users.
    */
   @Test
-  public void testGetAllUsers() throws Exception {
+  public void testGetAllUsers() {
     Integer count = keycloakSyncService.getTotalUsers();
     assertThat(count).isGreaterThan(0);
     keycloakSyncService.processAllUsers(this::doNothing, BATCH_SIZE);
@@ -102,7 +102,7 @@ public class KeycloakSyncServiceIT {
 
 
   @Test
-  public void testUserGroups() throws Exception {
+  public void testUserGroups() {
     ExternalObjects externalObjects = keycloakSyncService.getAllUsersAndGroups();
     LOGGER.debug("Users and Groups");
     LOGGER.debug("{}", externalObjects);

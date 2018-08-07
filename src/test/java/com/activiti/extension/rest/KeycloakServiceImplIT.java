@@ -43,7 +43,7 @@ public class KeycloakServiceImplIT {
    * @throws Exception
    */
   @Before
-  public void beforeTest() throws Exception {
+  public void beforeTest() {
     assertThat(keycloakService).isNotNull();
   }
 
@@ -52,7 +52,7 @@ public class KeycloakServiceImplIT {
    * @throws Exception
    */
   @Test
-  public void testAuthenticate() throws Exception {
+  public void testAuthenticate() {
     KeycloakToken token = keycloakService.connect();
     assertThat(token).isNotNull();
     LOGGER.trace("Token: {}", token);
@@ -63,7 +63,7 @@ public class KeycloakServiceImplIT {
    * @throws Exception
    */
   @Test
-  public void testUserCount() throws Exception {
+  public void testUserCount() {
     Integer count = keycloakService.getTotalUsers();
     assertThat(count).isNotNull();
     assertThat(count).isGreaterThan(1);
@@ -75,7 +75,7 @@ public class KeycloakServiceImplIT {
    * @throws Exception
    */
   @Test
-  public void testUserPage() throws Exception {
+  public void testUserPage() {
     final int MAX = 100;
     final int START = 0;
     Integer count = keycloakService.getTotalUsers();
@@ -92,7 +92,7 @@ public class KeycloakServiceImplIT {
   }
 
   @Test
-  public void testGetGroups() throws Exception {
+  public void testGetGroups() {
     Optional<Set<KeycloakGroup>> groups = keycloakService.getGroups();
     assertThat(groups).isNotEmpty();
     LOGGER.debug("Groups {} ", groups.orElse(ConcurrentHashMap.newKeySet()));

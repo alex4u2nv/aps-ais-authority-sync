@@ -37,7 +37,7 @@ public class KeycloakUserToUserTest {
    * @throws Exception
    */
   @Test
-  public void testConversionNullCheck() throws Exception {
+  public void testConversionNullCheck() {
     ExternalIdmUser user = keycloakUserToUser.convert(null);
     assertThat(user).isNull();
   }
@@ -47,7 +47,7 @@ public class KeycloakUserToUserTest {
    * @throws Exception
    */
   @Test
-  public void testConversion() throws Exception {
+  public void testConversion() {
     final KeycloakUser keycloakUser = KeycloakUser.builder()
         .withAccess(LdapAccess.builder()
             .withImpersonate(true)
