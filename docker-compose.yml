@@ -3,21 +3,11 @@ services:
     aps:
       build: ./
       image: activiti
-      environment:
-        ACTIVITI_APP_PROPS: '${CATALINA_HOME}/lib/activiti-app.properties'
-        ACTIVITI_IDENTITY_SERVICE_PROPS: /usr/local/tomcat/lib/activiti-identity-service.properties
-        IDENTITY_SERVICE_ENABLED: 'true'
-        IDENTITY_SERVICE_REALM: springboot
-        IDENTITY_SERVICE_AUTH: 'http://192.168.1.75:8180/auth'
-        IDENTITY_SERVICE_SSL_REQUIRED: none
-        IDENTITY_SERVICE_RESOURCE: activiti
-        IDENTITY_SERVICE_PRINCIPAL_ATTRIBUTE: email
-        IDENTITY_SERVICE_ENABLE_BASIC_AUTH: 'true'
-        IDENTITY_SERVICE_TOKEN_STORE: session
       ports:
         - '8080:8080'
       depends_on:
         - keycloak
+        - keycloak2
 
     keycloak:
       image: alfresco/alfresco-keycloak
@@ -28,6 +18,18 @@ services:
         - "openldap2"
         - "openldap3"
 
+    keycloak2:
+      build: ./src/test/docker/keycloak
+      image: keycloak
+      environment:
+        KEYCLOAK_USER: "admin"
+        KEYCLOAK_PASSWORD: "admin"
+      ports:
+        - "8380:8380"
+      depends_on:
+        - "openldap1"
+        - "openldap2"
+        - "openldap3"
     openldap1:
         build: ./src/test/docker/openldap/
         image:  alfresco/openldap

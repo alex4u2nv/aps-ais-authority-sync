@@ -9,7 +9,7 @@
 #
 #
 ####################################################################################################
-KEYCLOAK_URL=http://localhost:8180/auth
+KEYCLOAK_URL=http://localhost:8380/auth
 KEYCLOAK_REALM=springboot
 KEYCLOAK_CLIENT_ID=admin
 KEYCLOAK_CLIENT_SECRET=admin
@@ -23,9 +23,10 @@ export TKN=$(curl -s -X POST "${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/
  -d 'grant_type=password' \
  -d 'client_id=admin-cli' | jq -r '.access_token')
 
-user_page=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/users?first=0&max=100" \
+user_page=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/springboot/users?first=0&max=800" \
 -H "Accept: application/json" \
 -H "Authorization: Bearer $TKN" | jq .)
+
 
 
 
@@ -52,4 +53,4 @@ groupsMembers=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/g
 -H "Accept: application/json" \
 -H "Authorization: Bearer $TKN" | jq .)
 
-echo $groupsMembers
+#echo $groupsMembers

@@ -18,6 +18,8 @@
     <aps.spring.version>4.3.8.RELEASE</aps.spring.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <keycloak.host>yourhost</keycloak.host>
+    <keycloak.port>8380</keycloak.port>
   </properties>
 
   <dependencies>
@@ -120,6 +122,7 @@
       </testResource>
       <testResource>
         <directory>src/test/resources</directory>
+        <filtering>true</filtering>
       </testResource>
       <testResource>
         <directory>src/test/license</directory>

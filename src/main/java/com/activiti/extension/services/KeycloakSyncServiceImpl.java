@@ -68,10 +68,18 @@ public class KeycloakSyncServiceImpl implements KeycloakSyncService {
     int totalCount = 0;
     int actualCount = 0;
     long startTime = System.nanoTime();
+    int errorBatchCount = 0;
+    final int originalBatchSize = batchSize;
     do {
       Optional<List<KeycloakUser>> users =
           (groupId == null) ? keycloakService.getUsers(totalCount, batchSize)
               : keycloakService.getGroupMembers(groupId, totalCount, batchSize);
+
+      if (errorBatchCount == originalBatchSize) {
+        errorBatchCount = 0;
+        batchSize = originalBatchSize;
+      }
+
       if (users.isPresent()) {
         List<ExternalUser> externalUsers = users.get()
             .stream()
@@ -83,12 +91,19 @@ public class KeycloakSyncServiceImpl implements KeycloakSyncService {
         externalUsers.parallelStream().forEach(processor::process);
         LOGGER.debug("page: {} with items returned {}", page, pageSize);
       } else {
-        totalCount += batchSize; //increment by batch size as this batch has an invalid item that prevents keycloak form returning
         LOGGER.error("No users were returned, check Keycloak's logs for possible errors");
+        LOGGER.error("Processing one user at a time, till we get through this error batch");
+        if (batchSize != originalBatchSize) //increment only after we start error batch processing
+        {
+          totalCount += batchSize; //increment by batch size as this batch has an invalid item that prevents keycloak form returning
+        }
+        errorBatchCount++;//start error counting
+        batchSize = 1;
       }
+
       page++;
 
-    } while (pageSize == batchSize);
+    } while (pageSize >= batchSize);
     long endTime = System.nanoTime();
     long duration = (endTime - startTime) / 1000000;
     LOGGER.info("-------------------------------------------------------------------------------");
@@ -110,29 +125,43 @@ public class KeycloakSyncServiceImpl implements KeycloakSyncService {
   public Set<ExternalUser> getAllUsers() throws RuntimeException {
 
     final Set<ExternalUser> users = ConcurrentHashMap.newKeySet();
-    processAllUsers(users::add, DEFAULT_BATCH);
+    processAllUsers(user -> collectUser(users, user), DEFAULT_BATCH);
 
     return users;
+  }
+
+  /**
+   * Collect users, but skip the admin user to avoid dupplication error. Because instead of merging
+   * users; activiti records a duplicate, then crashes servlet when logged in
+   *
+   * @param users
+   * @param user
+   * @return
+   */
+  private boolean collectUser(Set<ExternalUser> users, ExternalUser user) {
+    if (user.getId().equals("admin")) {
+      return false;
+    }
+    users.add(user);
+    return true;
   }
 
   @Override
   public Set<ExternalUser> getAllUsersInGroup(String groupId) throws RuntimeException {
     Set<ExternalUser> members = ConcurrentHashMap.newKeySet();
 
-    processAllUsersInGroup(members::add, groupId, DEFAULT_BATCH);
+    processAllUsersInGroup(user -> collectUser(members, user), groupId, DEFAULT_BATCH);
     return members;
   }
 
   /**
    * get all user and group memberships
-   * @return
-   * @throws RuntimeException
    */
   @Override
   public ExternalObjects getAllUsersAndGroups() throws RuntimeException {
 
     Set<ExternalUser> users = getAllUsers();
-    Set<ExternalGroup> groups =getAllGroupAndMembers();
+    Set<ExternalGroup> groups = getAllGroupAndMembers();
 
     return ExternalObjects.builder()
         .withGroups(new ArrayList<>(groups))
@@ -150,8 +179,6 @@ public class KeycloakSyncServiceImpl implements KeycloakSyncService {
   /**
    * Collect group members for a group; also traverse down childGroups and popuplate those as well.
    * //recursive.
-   * @param group
-   * @return
    */
   private ExternalGroup getGroupMembers(ExternalGroup group) {
     List<ExternalUser> ug = new ArrayList<>(getAllUsersInGroup(group.getOriginalSrcId()));

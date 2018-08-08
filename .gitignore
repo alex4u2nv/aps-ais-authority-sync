@@ -6,3 +6,5 @@
 /src/test/license/
 activiti.lic
 .idea
+.DS_Store
+
