@@ -100,7 +100,7 @@ When paging through users, if a ldap exception is thrown in keycloak, which fail
 batch to 1 item, and iterate for this batch to avoid the error
 
 This error is also thrown when you try to lookup a duplicated user in keycloak
-
+https://issues.jboss.org/browse/KEYCLOAK-3098 
 ```
 keycloak2_1  | 16:08:46,016 ERROR [org.keycloak.services.error.KeycloakErrorHandler] (default task-43) Uncaught server error: org.keycloak.models.ModelDuplicateException: Error - multiple LDAP objects found but expected just one
 keycloak2_1  | 	at org.keycloak.storage.ldap.idm.query.internal.LDAPQuery.getFirstResult(LDAPQuery.java:182)
