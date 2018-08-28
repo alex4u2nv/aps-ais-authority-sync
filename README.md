@@ -7,6 +7,8 @@ able to load all users and iterate through them, as in a full sync scenario.
 Additionally, Keycloak's database does not support duplicated user accounts when federatating users
 from multiple ldaps. Duplicate accounts can lead to errors.
 
+For more information see: https://swazzy.com/2018/08/27/user-synchronization-in-aps-from-keycloak/
+
 
 # Version
 This version of aps-archetype-base-java has been developed and verified against Alfresco Process Services 1.9.0
